@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import OSCKit
 
 class DashboardHrView: UIView {
 
     private let hrLabel: UILabel
     private let bpmLabel: UILabel
+    private var last_bpmVal: Int = -1
 
     var hrValue: Int? = nil {
         didSet {
@@ -20,6 +22,11 @@ class DashboardHrView: UIView {
             }
 
             hrLabel.text = String(format: "%3d", arguments: [hrValue])
+            if (last_bpmVal != hrValue)
+            {
+                sendBPM(bpmVal: hrValue)
+                last_bpmVal = hrValue
+            }
         }
     }
 
@@ -57,5 +64,16 @@ class DashboardHrView: UIView {
             [bpmLabel.leadingAnchor.constraint(equalTo: hrLabel.trailingAnchor, constant: 6.0),
              bpmLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
              bpmLabel.firstBaselineAnchor.constraint(equalTo: hrLabel.firstBaselineAnchor)])
+    }
+    
+    private func sendBPM(bpmVal: Int ){
+        
+        do {
+            let message = try OSCMessage(with: "/movesens/bpm", arguments: [bpmVal])
+            try     appGlobals.oscClient!.instance.send(message)
+        } catch {
+            print("Unable to create OSCMessage: \(error.localizedDescription)")
+        }
+        
     }
 }

@@ -1,9 +1,26 @@
 import UIKit
+import OSCKit
+
+
+struct appGlobals {
+    static var oscClient : OscClient? = nil
+    static  var oscHost : String = "undefined"
+}
+
+public class OscClient {
+  let instance: OSCUdpClient
+
+    init(host: String, portNo: UInt16) {
+        self.instance = OSCUdpClient(host: host, port: portNo)
+  }
+}
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
+    
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
@@ -25,9 +42,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
 
+        var oscTarget = "127.0.0.1:55555"
+        print ("OSC TX set to: " ,oscTarget)
+        self.openOscClient(oscTarget)
+        
         return true
     }
 
+    func openOscClient(_ targetStr: String)
+    {
+        var hostIP : Substring
+        var portNo : UInt16
+        
+        var parts = targetStr.split(separator: ":")
+        
+        hostIP = parts[0]
+        portNo = UInt16(parts[1])!
+        
+        appGlobals.oscClient = OscClient(host: String(hostIP), portNo: portNo)
+        appGlobals.oscHost = targetStr
+        print ("Setting up OSC tx client with: " ,targetStr)
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of
         // temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it
@@ -57,5 +93,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+       // appGlobals.oscClient?.instance.host.
     }
 }
