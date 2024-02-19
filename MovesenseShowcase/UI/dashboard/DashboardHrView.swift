@@ -67,7 +67,7 @@ class DashboardHrView: UIView {
     }
     
     private func sendBPM(bpmVal: Int ){
-        
+        print(bpmVal)
         do {
             let message = try OSCMessage(with: "/movesens/bpm", arguments: [bpmVal])
             try     appGlobals.oscClient!.instance.send(message)

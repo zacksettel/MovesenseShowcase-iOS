@@ -43,6 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
 
         var oscTarget = "127.0.0.1:55555"
+        
         print ("OSC TX set to: " ,oscTarget)
         self.openOscClient(oscTarget)
         
